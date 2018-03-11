@@ -1,10 +1,10 @@
 # pymatica-interpreter
 
 # Usage
-At the moment the commands used are SymPy's. See their documentation for which functions are available. Example usage for differentiating a function:
-`var y = diff(x**2 + exp(2*x), x)`
-´print y´
-This will print out ´2*x + 2*exp(2*x)´
+At the moment the commands used are SymPy's. See their documentation for which functions are available. Example usage for differentiating a function:  
+`var y = diff(x**2 + exp(2*x), x)`  
+`print y`  
+This will print out `2*x + 2*exp(2*x)`  
 See the example.pymath file for examples of how to use Pymatica.
 
 ## Running script
