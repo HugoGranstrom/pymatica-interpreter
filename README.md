@@ -2,7 +2,7 @@
 
 # Usage
 
-# Running script
+## Running script
 To run a .pymath file (just a txt file) run run this command:
 `python main.py filename`
 

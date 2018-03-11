@@ -10,3 +10,5 @@
 - non character values is not allowed in variable names -> _,./-+()&%¤#"@£${[]}\?
 
 ## Functionality
+- Iteratable
+- save section in the program file at the bottom as json. save_section = Source.split("Save section") first and then source.split("\n) and then source.split(" ")

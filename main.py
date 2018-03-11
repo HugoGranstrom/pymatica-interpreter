@@ -1,6 +1,10 @@
 import sys
-from sympy import *
+import json
+
 from sympy.parsing.sympy_parser import parse_expr
+from sympy import *
+
+# don't move re up, it will break the program for some reasong. Maybe it has to do with parse_expr
 import re
 
 var_dict = {}
@@ -9,7 +13,7 @@ file_name = sys.argv[1]
 
 # loop through var_dict and see if expr includes any of them. Then replace it with '(' ')' around it.
 def insert_vars(expr):
-    splitted_expr = re.split('(\W)', expr)
+    splitted_expr = re.split( '(\W)', expr )
     for i, token in enumerate(splitted_expr):
         if token in var_dict:
             splitted_expr[i] = "(" + var_dict[token] + ")"
@@ -56,8 +60,29 @@ for s in source:
     elif s_space[0].lower() == "save":
         file_name = s_space[1]
         if s_space[2].lower() == "append":
-            #with open(file_name, "a") as f
-            pass
+            try:
+                with open(file_name, "r+") as f:
+                    old_save = json.load(f.read())
+                    new_save = {**old_save, **var_dict}
+                    json.dump(new_save ,f)
+            except:
+                with open(file_name, "w+") as f:
+                    json.dump(var_dict ,f)
+        elif s_space[2].lower() == "overwrite":
+            answer = input("This will delete all your old variables saved in {}. Are you sure you want to delete those? (y/n)".format(file_name))
+            if answer[0].lower() == "y":
+                with open(file_name, "w+") as f:
+                    json.dump(var_dict ,f)
+            else: 
+                print("Use the command 'save filename append' instead if you want to save your old variables")
+    # load var_dict from json file overringing the old local variables
+    elif s_space[0].lower() == "load":
+        file_name = s_space[1]
+        with open(file_name, "r") as f:
+            loaded_save = f.read()
+            loaded_save = json.loads(loaded_save)
+            new_save = {**var_dict, **loaded_save}
+            var_dict = new_save
     # same as print but prints the decimal form
     elif s_space[0].lower() == "printf":
         expr = ' '.join(str(e) for e in s_space[1:])
