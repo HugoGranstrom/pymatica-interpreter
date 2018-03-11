@@ -6,6 +6,7 @@
 - A symbol `#` for comments, those lines starting with that symbol gets ignored by the interpreter (+)
 - Mathematical functions have the syntax `func()`
 - Replace custom function names with sympy ones. (eg. ) 
-- parse_expr when? when saving variable 
 - save statement: `save filename append/overwrite`
-- non character values is not allowed -> _,./-+()&%¤#"@£${[]}\?
+- non character values is not allowed in variable names -> _,./-+()&%¤#"@£${[]}\?
+
+## Functionality

@@ -1,3 +1,1 @@
-print haha + diff(cos(t), t)
-var z = sin(t)
-print diff(z, t)
+print sin(pi/12)
