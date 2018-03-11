@@ -10,7 +10,7 @@ import re
 init_printing(use_unicode=False)
 
 var_dict = {}
-reserved_names = ['var', 'cos', 'sin', 'tan', 'pi', 'e']
+reserved_names = ['var', 'cos', 'sin', 'tan', 'pi', 'e', 'last']
 
 # loop through var_dict and see if expr includes any of them. Then replace it with '(' ')' around it.
 def insert_vars(expr):
@@ -106,7 +106,7 @@ if len(sys.argv) > 1:
 # if only one argument, run REPL
 else:
     # everything above but in a loop
-    
+
     # if first word is '#' the line is a comment and is skipped
     while True:
         cmd = input("$>> ")
@@ -115,6 +115,7 @@ else:
             continue
 
         elif cmd_space[0].lower() == "exit":
+            print("Thank you for using Pymatica by Hugo Granström")
             break
 
         # if the first word is 'var' treat the line as a variable assignment 
