@@ -52,12 +52,6 @@ for s in source:
     elif s_space[0].lower() == "print":
         expr = ' '.join(str(e) for e in s_space[1:])
         inserted_expr = insert_vars(expr)
-        # clean expr before printing if first and last char is paranteses
-        while True:
-            if inserted_expr[0] == "(" and inserted_expr[-1] == ")":
-                inserted_expr = inserted_expr[1:-1]
-            else:
-                break
         eval_expr = parse_expr(inserted_expr)
         pprint(eval_expr)
 
