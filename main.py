@@ -11,7 +11,6 @@ init_printing(use_unicode=False)
 
 var_dict = {}
 reserved_names = ['var', 'cos', 'sin', 'tan', 'pi', 'e']
-file_name = sys.argv[1]
 
 # loop through var_dict and see if expr includes any of them. Then replace it with '(' ')' around it.
 def insert_vars(expr):
@@ -22,81 +21,160 @@ def insert_vars(expr):
     string_expr = ''.join(str(e) for e in splitted_expr)
     return string_expr
 
+# if more then one argument is passed, run file
+if len(sys.argv) > 1:
+    # read from file test.pymath and save it in source
+    file_name = sys.argv[1]
+    with open(file_name, "r") as f:
+        source = f.read()
+
+    # split source into lines
+    source = source.split("\n")
+
+    for s in source:
+        s_space = s.split(" ")
+        
+        # if first word is '#' the line is a comment and is skipped
+        if s_space[0].lower() == "#":
+            continue
+
+        # if the first word is 'var' treat the line as a variable assignment 
+        elif s_space[0].lower() == "var":
+            # if var_name in reserved_names -> not allowed
+            var_name = s_space[1] 
+            var_value = ' '.join(str(e) for e in s_space[3:]) # value is everything after the '='
+            var_value = '({})'.format(var_value) # add parentases around the value
+            var_value = insert_vars(var_value) # replace variables with their values
+            var_dict[var_name] = var_value # add name/value pair to variable dictionary
+
+        # print the answer in sympy form, use printf if you want decimal
+        elif s_space[0].lower() == "print":
+            expr = ' '.join(str(e) for e in s_space[1:])
+            inserted_expr = insert_vars(expr)
+            eval_expr = parse_expr(inserted_expr)
+            pprint(eval_expr)
+
+        # save var_dict to json file
+        elif s_space[0].lower() == "save":
+            file_name = s_space[1]
+            if s_space[2].lower() == "append":
+                try:
+                    with open(file_name, "r+") as f:
+                        old_save = json.load(f.read())
+                        new_save = {**old_save, **var_dict}
+                        json.dump(new_save ,f)
+                except:
+                    with open(file_name, "w+") as f:
+                        json.dump(var_dict ,f)
+            elif s_space[2].lower() == "overwrite":
+                answer = input("This will delete all your old variables saved in {}. Are you sure you want to delete those? (y/n)".format(file_name))
+                if answer[0].lower() == "y":
+                    with open(file_name, "w+") as f:
+                        json.dump(var_dict ,f)
+                else: 
+                    print("Use the command 'save filename append' instead if you want to save your old variables")
+
+        # load var_dict from json file overringing the old local variables
+        elif s_space[0].lower() == "load":
+            file_name = s_space[1]
+            with open(file_name, "r") as f:
+                loaded_save = f.read()
+                loaded_save = json.loads(loaded_save)
+                new_save = {**var_dict, **loaded_save}
+                var_dict = new_save
+
+        # same as print but prints the decimal form
+        elif s_space[0].lower() == "printf":
+            expr = ' '.join(str(e) for e in s_space[1:])
+            inserted_expr = insert_vars(expr)
+            eval_expr = parse_expr(inserted_expr)
+            print(eval_expr.evalf())
+
+        else:
+            # maybe use this as print 
+            continue
 
 
 
-# read from file test.pymath and save it in source
-with open(file_name, "r") as f:
-    source = f.read()
 
-# split source into lines
-source = source.split("\n")
 
-for s in source:
-    s_space = s.split(" ")
+
+
+#REPL
+
+
+# if only one argument, run REPL
+else:
+    # everything above but in a loop
     
     # if first word is '#' the line is a comment and is skipped
-    if s_space[0].lower() == "#":
-        continue
+    while True:
+        cmd = input("$>> ")
+        cmd_space = cmd.split(" ")
+        if cmd_space[0].lower() == "#":
+            continue
 
-    # if the first word is 'var' treat the line as a variable assignment 
-    elif s_space[0].lower() == "var":
-        # if var_name in reserved_names -> not allowed
-        var_name = s_space[1] 
-        var_value = ' '.join(str(e) for e in s_space[3:]) # value is everything after the '='
-        var_value = '({})'.format(var_value) # add parentases around the value
-        var_value = insert_vars(var_value) # replace variables with their values
-        var_dict[var_name] = var_value # add name/value pair to variable dictionary
+        elif cmd_space[0].lower() == "exit":
+            break
 
-    # print the answer in sympy form, use printf if you want decimal
-    elif s_space[0].lower() == "print":
-        expr = ' '.join(str(e) for e in s_space[1:])
-        inserted_expr = insert_vars(expr)
-        eval_expr = parse_expr(inserted_expr)
-        pprint(eval_expr)
+        # if the first word is 'var' treat the line as a variable assignment 
+        elif cmd_space[0].lower() == "var":
+            # if var_name in reserved_names -> not allowed
+            var_name = cmd_space[1] 
+            var_value = ' '.join(str(e) for e in cmd_space[3:]) # value is everything after the '='
+            var_value = '({})'.format(var_value) # add parentases around the value
+            var_value = insert_vars(var_value) # replace variables with their values
+            var_dict[var_name] = var_value # add name/value pair to variable dictionary
 
-    # save var_dict to json file
-    elif s_space[0].lower() == "save":
-        file_name = s_space[1]
-        if s_space[2].lower() == "append":
+        # print the answer in sympy form, use printf if you want decimal
+        elif cmd_space[0].lower() == "print":
+            expr = ' '.join(str(e) for e in cmd_space[1:])
+            inserted_expr = insert_vars(expr)
+            eval_expr = parse_expr(inserted_expr)
+            pprint(eval_expr)
+
+        # save var_dict to json file
+        elif cmd_space[0].lower() == "save":
+            file_name = cmd_space[1]
+            if cmd_space[2].lower() == "append":
+                try:
+                    with open(file_name, "r+") as f:
+                        old_save = json.load(f.read())
+                        new_save = {**old_save, **var_dict}
+                        json.dump(new_save ,f)
+                except:
+                    with open(file_name, "w+") as f:
+                        json.dump(var_dict ,f)
+            elif cmd_space[2].lower() == "overwrite":
+                answer = input("This will delete all your old variables saved in {}. Are you sure you want to delete those? (y/n)".format(file_name))
+                if answer[0].lower() == "y":
+                    with open(file_name, "w+") as f:
+                        json.dump(var_dict ,f)
+                else: 
+                    print("Use the command 'save filename append' instead if you want to save your old variables")
+
+        # load var_dict from json file overringing the old local variables
+        elif cmd_space[0].lower() == "load":
+            file_name = cmd_space[1]
+            with open(file_name, "r") as f:
+                loaded_save = f.read()
+                loaded_save = json.loads(loaded_save)
+                new_save = {**var_dict, **loaded_save}
+                var_dict = new_save
+
+        # same as print but prints the decimal form
+        elif cmd_space[0].lower() == "printf":
+            expr = ' '.join(str(e) for e in cmd_space[1:])
+            inserted_expr = insert_vars(expr)
+            eval_expr = parse_expr(inserted_expr)
+            print(eval_expr.evalf())
+
+        else:
             try:
-                with open(file_name, "r+") as f:
-                    old_save = json.load(f.read())
-                    new_save = {**old_save, **var_dict}
-                    json.dump(new_save ,f)
+                expr = ' '.join(str(e) for e in cmd_space)
+                inserted_expr = insert_vars(expr)
+                eval_expr = parse_expr(inserted_expr)
+                pprint(eval_expr)
             except:
-                with open(file_name, "w+") as f:
-                    json.dump(var_dict ,f)
-        elif s_space[2].lower() == "overwrite":
-            answer = input("This will delete all your old variables saved in {}. Are you sure you want to delete those? (y/n)".format(file_name))
-            if answer[0].lower() == "y":
-                with open(file_name, "w+") as f:
-                    json.dump(var_dict ,f)
-            else: 
-                print("Use the command 'save filename append' instead if you want to save your old variables")
+                print("Argument error")
 
-    # load var_dict from json file overringing the old local variables
-    elif s_space[0].lower() == "load":
-        file_name = s_space[1]
-        with open(file_name, "r") as f:
-            loaded_save = f.read()
-            loaded_save = json.loads(loaded_save)
-            new_save = {**var_dict, **loaded_save}
-            var_dict = new_save
-
-    # same as print but prints the decimal form
-    elif s_space[0].lower() == "printf":
-        expr = ' '.join(str(e) for e in s_space[1:])
-        inserted_expr = insert_vars(expr)
-        # clean expr before printing if first and last char is paranteses
-        while True:
-            if inserted_expr[0] == "(" and inserted_expr[-1] == ")":
-                inserted_expr = inserted_expr[1:-1]
-            else:
-                break
-        eval_expr = parse_expr(inserted_expr)
-        print(eval_expr.evalf())
-
-    else:
-        # maybe use this as print 
-        continue
