@@ -1,0 +1,3 @@
+printf Integral(x**x, y).doit()
+
+

@@ -1,0 +1,7 @@
+# Variables start with a '# ' and is ignored by the interpreter
+
+# Variables is defined by writing 'var variable_name = value' where value can be any SymPy compatible function such as 'limit()'
+var answer = limit(1/x, x, 0)
+
+# Printing, write 'print thing_to_be_printed'. It could be a variable or function.
+print answer
