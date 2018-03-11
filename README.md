@@ -3,7 +3,8 @@
 # Usage
 
 # Running script
-To run a .pymath file (just a txt file) 
+To run a .pymath file (just a txt file) run run this command:
+`python main.py filename`
 
 ## What's Working
 - Comments (`# this is a comment`)
