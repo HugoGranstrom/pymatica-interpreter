@@ -1,1 +1,1 @@
-print sin(pi/12)
+printf sin(pi/12)

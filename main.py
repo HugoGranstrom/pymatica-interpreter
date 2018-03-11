@@ -40,6 +40,7 @@ for s in source:
         var_value = '({})'.format(var_value) # add parentases around the value
         var_value = insert_vars(var_value) # replace variables with their values
         var_dict[var_name] = var_value # add name/value pair to variable dictionary
+    # print the answer in sympy form, use printf if you want decimal
     elif s_space[0].lower() == "print":
         expr = ' '.join(str(e) for e in s_space[1:])
         inserted_expr = insert_vars(expr)
@@ -57,6 +58,18 @@ for s in source:
         if s_space[2].lower() == "append":
             #with open(file_name, "a") as f
             pass
+    # same as print but prints the decimal form
+    elif s_space[0].lower() == "printf":
+        expr = ' '.join(str(e) for e in s_space[1:])
+        inserted_expr = insert_vars(expr)
+        # clean expr before printing if first and last char is paranteses
+        while True:
+            if inserted_expr[0] == "(" and inserted_expr[-1] == ")":
+                inserted_expr = inserted_expr[1:-1]
+            else:
+                break
+        eval_expr = parse_expr(inserted_expr)
+        print(eval_expr.evalf())
     else:
         # maybe use this as print 
         continue
