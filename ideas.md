@@ -12,3 +12,4 @@
 ## Functionality
 - Iteratable
 - save section in the program file at the bottom as json. save_section = Source.split("Save section") first and then source.split("\n) and then source.split(" ")
+- config section of file where settings can be set.
